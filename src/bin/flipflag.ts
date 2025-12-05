@@ -177,6 +177,45 @@ async function cmdStart(argv: string[]) {
   if (createBranch) {
     createBranchIfNeeded(taskId, type);
   }
+
+  // === waiting mode when time tracking is enabled ===
+  if (trackTime) {
+    console.log('');
+    console.log(`Time tracking is active for task ${taskId}.`);
+    console.log('Press Enter when you want to stop tracking...');
+
+    await new Promise<void>((resolve) => {
+      process.stdin.resume();
+      process.stdin.once('data', () => {
+        resolve();
+      });
+    });
+
+    const now = new Date().toISOString();
+
+    const updatedTasks = loadTasks();
+    const task = updatedTasks[taskId];
+
+    if (!task) {
+      console.error(`Task ${taskId} not found while stopping`);
+      process.exit(1);
+    }
+
+    const times = task.times || [];
+    const last = [...times].reverse().find((t) => !t.finished);
+
+    if (!last) {
+      console.error(`Task ${taskId} has no open time interval to stop`);
+      process.exit(1);
+    }
+
+    last.finished = now;
+    task.times = times;
+    updatedTasks[taskId] = task;
+    saveTasks(updatedTasks);
+
+    console.log(`Stopped work on task ${taskId} at ${now}`);
+  }
 }
 
 async function cmdStop(argv: string[]) {
@@ -232,8 +271,14 @@ Usage:
   flipflag start [TASK-ID] [--type=feature|bugfix] [--branch|--no-branch] [--time|--no-time]
   flipflag stop [TASK-ID]
 
+Behavior:
+  - If time tracking is enabled, "start" will keep running and wait until you press Enter,
+    then it will set "finished" for the last interval.
+  - If time tracking is disabled, "start" behaves as a simple task initializer and exits immediately.
+
 Examples:
   flipflag start TASK-2 --type=feature --branch --time
+  flipflag start TASK-3 --type=bugfix --no-time
   flipflag stop TASK-2
 `);
 }
