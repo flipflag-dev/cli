@@ -38,6 +38,24 @@ function saveTasks(tasks: Tasks) {
   fs.writeFileSync(TASKS_FILE, yamlStr, 'utf8');
 }
 
+// ==== git helpers ====
+
+function getGitEmail(): string {
+  try {
+    const email = execSync('git config user.email', {
+      stdio: ['ignore', 'pipe', 'ignore'],
+    })
+      .toString()
+      .trim();
+
+    if (email) return email;
+  } catch {
+    // ignore, fallback below
+  }
+
+  return process.env.FLIPFLAG_USER || '';
+}
+
 // ==== git branches logic ====
 
 function createBranchIfNeeded(taskId: string, type: TaskType) {
@@ -151,7 +169,7 @@ async function cmdStart(argv: string[]) {
   if (!tasks[taskId]) {
     tasks[taskId] = {
       description: '',
-      contributor: process.env.FLIPFLAG_USER || '',
+      contributor: getGitEmail(),
       type,
       times: [],
     };
@@ -159,6 +177,7 @@ async function cmdStart(argv: string[]) {
   } else {
     // if task already exists, we can update type if it's empty
     if (!tasks[taskId].type) tasks[taskId].type = type;
+    if (!tasks[taskId].contributor) tasks[taskId].contributor = getGitEmail();
     console.log(`Continuing work on task ${taskId}`);
   }
 
@@ -272,6 +291,7 @@ Usage:
   flipflag stop [TASK-ID]
 
 Behavior:
+  - contributor is taken from "git config user.email" (fallback: FLIPFLAG_USER env or empty string)
   - If time tracking is enabled, "start" will keep running and wait until you press Enter,
     then it will set "finished" for the last interval.
   - If time tracking is disabled, "start" behaves as a simple task initializer and exits immediately.
