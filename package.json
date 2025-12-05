@@ -1,6 +1,6 @@
 {
   "name": "@flipflag/cli",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "description": "A lightweight client-side CLI for working with FlipFlag",
   "bin": {
