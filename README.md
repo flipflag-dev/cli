@@ -1,14 +1,17 @@
 # FlipFlag CLI
 
-**Flipflag** is a lightweight CLI tool for tracking development tasks directly inside your repository.  
-It stores data in a local `.flipflag.yml` file and allows you to:
+**FlipFlag CLI** is a lightweight command-line tool for managing feature flags and tracking development tasks directly in your repository.  
 
-- start and stop work sessions,
-- track time,
-- automatically create/switch Git branches,
-- store contributor information from Git.
+## Key Features
 
-Flipflag is designed as a minimal, developer-friendly alternative to larger issue/time-tracking systems.
+- 📋 **Task Management**: Start and stop work sessions with time tracking
+- 🔄 **Flag Synchronization**: Upload feature flags to FlipFlag platform
+- 🌿 **Git Integration**: Automatically create/switch Git branches
+- ⏱️ **Time Tracking**: Record when features are being worked on
+- 👥 **Team Collaboration**: Store contributor information from Git
+- 🚀 **CI/CD Ready**: Integrate with GitLab, GitHub Actions, CircleCI, and more
+
+FlipFlag CLI stores all data in a local `.flipflag.yml` file, making it easy to version control your feature flags alongside your code.
 
 ---
 
@@ -54,7 +57,15 @@ TASK-1:
 
 ---
 
-## 🧭 Usage
+## 🧭 Commands
+
+FlipFlag CLI provides three main commands:
+
+1. **`start`** - Start working on a task
+2. **`stop`** - Stop working on a task
+3. **`sync`** - Upload feature flags to FlipFlag API
+
+---
 
 ### ▶️ Start a Task
 
@@ -150,6 +161,72 @@ Closes the latest unfinished time interval.
 
 ---
 
+## 🔄 Sync Command
+
+Upload feature flags from `.flipflag.yml` to FlipFlag platform:
+
+```bash
+flipflag sync --private-key "your_private_key"
+```
+
+### Using Environment Variables (Recommended)
+
+```bash
+export FLIPFLAG_PRIVATE_KEY="your_private_key"
+flipflag sync
+```
+
+### Sync Command Options
+
+| Option | Environment Variable | Description | Required |
+|--------|---------------------|-------------|----------|
+| `--private-key KEY` | `FLIPFLAG_PRIVATE_KEY` | Private API key | ✅ Yes |
+| `--public-key KEY` | `FLIPFLAG_PUBLIC_KEY` | Public API key | ❌ No |
+| `--api-url URL` | `FLIPFLAG_API_URL` | API endpoint | ❌ No |
+| `--config PATH` | - | Config file path | ❌ No |
+
+### Sync Examples
+
+```bash
+# Basic sync
+export FLIPFLAG_PRIVATE_KEY="priv_abc123..."
+flipflag sync
+
+# Custom config file
+flipflag sync --config .flipflag.production.yml
+
+# Self-hosted API
+flipflag sync --api-url "https://flipflag.your-company.com"
+```
+
+### CI/CD Integration
+
+**GitLab CI/CD:**
+
+```yaml
+sync-features:
+  stage: sync
+  image: node:20-alpine
+  only:
+    - main
+  script:
+    - npm install -g @flipflag/cli
+    - flipflag sync --private-key "$FLIPFLAG_PRIVATE_KEY"
+```
+
+**GitHub Actions:**
+
+```yaml
+- name: Sync Feature Flags
+  run: |
+    npm install -g @flipflag/cli
+    flipflag sync --private-key "${{ secrets.FLIPFLAG_PRIVATE_KEY }}"
+```
+
+📚 **Complete CI/CD Guide**: See [CLI_SYNC.md](../docs/CLI_SYNC.md) for detailed integration examples with GitLab, GitHub Actions, CircleCI, Jenkins, and Azure Pipelines.
+
+---
+
 ## 🆘 Help
 
 ```bash
@@ -194,6 +271,28 @@ npx flipflag start TASK-1
 
 ---
 
+## 📚 Documentation
+
+- **[Feature Flag Sync Guide](../docs/CLI_SYNC.md)** - Complete guide for syncing flags and CI/CD integration
+- **[CI/CD Examples](../docs/examples/)** - Ready-to-use configurations for various platforms
+- **[FlipFlag SDK](https://github.com/flipflag-dev/sdk)** - Client SDK for feature flag management
+
+---
+
+## 🔗 Links
+
+- **Website**: https://flipflag.dev
+- **Dashboard**: https://cloud.flipflag.dev
+- **Documentation**: https://docs.flipflag.dev
+- **GitHub**: https://github.com/flipflag-dev/cli
+- **NPM**: https://www.npmjs.com/package/@flipflag/cli
+
+---
+
 ## 📝 License
 
 MIT
+
+---
+
+**Made with ❤️ by the FlipFlag team**
