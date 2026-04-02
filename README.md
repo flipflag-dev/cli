@@ -4,10 +4,9 @@
 
 ## Key Features
 
-- 📋 **Task Management**: Start and stop work sessions with time tracking
+- 📋 **Task Management**: Start work sessions and track progress
 - 🔄 **Flag Synchronization**: Upload feature flags to FlipFlag platform
 - 🌿 **Git Integration**: Automatically create/switch Git branches
-- ⏱️ **Time Tracking**: Record when features are being worked on
 - 👥 **Team Collaboration**: Store contributor information from Git
 - 🚀 **CI/CD Ready**: Integrate with GitLab, GitHub Actions, CircleCI, and more
 
@@ -48,22 +47,16 @@ TASK-1:
   description: ""
   contributor: "dev@example.com"
   type: "feature"
-  times:
-    - started: "2025-01-01T10:00:00.000Z"
-      finished: "2025-01-01T12:30:00.000Z"
-    - started: "2025-01-02T09:00:00.000Z"
-      finished: null
 ```
 
 ---
 
 ## 🧭 Commands
 
-FlipFlag CLI provides three main commands:
+FlipFlag CLI provides two main commands:
 
 1. **`start`** - Start working on a task
-2. **`stop`** - Stop working on a task
-3. **`sync`** - Upload feature flags to FlipFlag API
+2. **`sync`** - Upload feature flags to FlipFlag API
 
 ---
 
@@ -79,31 +72,12 @@ During startup, you may be prompted to choose:
 
 - task type (`feature` or `bugfix`)
 - whether to create/switch to a Git branch
-- whether to enable time tracking
 
 ### Start with flags (non-interactive)
 
 ```bash
-flipflag start TASK-2 --type=bugfix --branch --time
+flipflag start TASK-2 --type=bugfix --branch
 ```
-
-### Start without time tracking
-
-```bash
-flipflag start TASK-3 --no-time
-```
-
----
-
-## ⏹ Stop a Task
-
-Stops the last open time interval:
-
-```bash
-flipflag stop TASK-1
-```
-
-If the ID is omitted, you will be asked to enter it.
 
 ---
 
@@ -121,24 +95,6 @@ Behavior:
 
 ---
 
-## 🕒 Time Tracking
-
-If `--time` is enabled, then `flipflag start` will:
-
-1. create a time entry with `{ started, finished: null }`;
-2. **wait until you press Enter**;
-3. write the `finished` timestamp.
-
-Example:
-
-```bash
-flipflag start TASK-5
-# ...work...
-# press Enter to stop tracking
-```
-
----
-
 ## 🧩 Start Command Flags
 
 | Flag | Description |
@@ -146,18 +102,6 @@ flipflag start TASK-5
 | `--type=feature` / `--type=bugfix` | Task type |
 | `--branch` | Create/switch Git branch |
 | `--no-branch` | Do not touch Git branches |
-| `--time` | Enable time tracking |
-| `--no-time` | Disable time tracking |
-
----
-
-## 🛠 Stop Command
-
-```bash
-flipflag stop TASK-ID
-```
-
-Closes the latest unfinished time interval.
 
 ---
 
@@ -240,15 +184,13 @@ flipflag help
 ### Typical workflow
 
 ```bash
-flipflag start TASK-10 --type=feature --branch --time
-# press Enter when done...
-flipflag stop TASK-10
+flipflag start TASK-10 --type=feature --branch
 ```
 
-### Create a task without time tracking
+### Create a task without a branch
 
 ```bash
-flipflag start TASK-21 --no-time --no-branch
+flipflag start TASK-21 --no-branch
 ```
 
 ---
